@@ -49,12 +49,27 @@ def retrieve_context(query, top_k=2):
     return "\n\n".join(documents[doc_id] for doc_id in top_ids)
 
 def query_llm(query, context):
+    """
+    Constructs a prompt with improved instructions for better answers.
+    """
     prompt = (
-        f"You have background info and transaction data below.\n\nContext:\n{context}\n\n"
-        f"User Query: {query}\n\nAnswer:"
+        "You are a helpful assistant. The user is asking questions based on transaction and charity data.\n"
+        "Analyze everything and provide a complete and accurate answer based on all relevant information.\n"
+        "List all relevant matches if the question asks for locations, people, or summaries.\n\n"
+        f"Context:\n{context}\n\n"
+        f"User Query: {query}\n\n"
+        "Answer:"
     )
-    output = generator(prompt, max_new_tokens=150)[0]['generated_text']
-    return output.strip().replace(prompt, "").strip()
+
+    outputs = generator(prompt, max_new_tokens=200, do_sample=True, temperature=0.7)
+    raw_output = outputs[0]['generated_text']
+
+    # Remove repeated prompt if generated
+    if raw_output.startswith(prompt):
+        raw_output = raw_output[len(prompt):].strip()
+
+    return raw_output.strip()
+
 
 def rag_chatbot(query):
     context = retrieve_context(query)
