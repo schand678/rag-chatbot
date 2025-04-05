@@ -4,10 +4,13 @@ import os
 sys.path.append(os.path.abspath(".."))
 from ragmodel import rag_chatbot
 
-# Suggested questions in the sidebar
+
+
+# ✅ Sidebar: Example questions
 st.sidebar.title("💬 Example Questions")
 st.sidebar.markdown(
     """
+**Try asking:**
 - What locations were the hampers picked up from?
 - Who picked up the premium hampers?
 - How many hampers were picked up?
